@@ -33,4 +33,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   cityInput.addEventListener("input", updateCitySuggestions);
+
+  // Переключение между вкладками
+  document.querySelectorAll('ul li a').forEach(function(tab) {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('ul li a').forEach(function(tab) {
+        tab.classList.remove('active');
+      });
+      this.classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(tabContent) {
+        tabContent.classList.remove('active');
+      });
+      document.querySelector('.tab-content > div:nth-child(' + (Array.from(this.parentNode.parentNode.children).indexOf(this.parentNode) + 1) + ')').classList.add('active');
+    });
+  });
+
+  // Обновление погоды при клике на город из вкладки "Вы смотрели"
+  document.querySelectorAll('.tab-content > div:nth-child(2) a').forEach(function(cityLink) {
+    cityLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('city').value = this.dataset.city;
+      document.querySelector('form').submit();
+    });
+  });
 });

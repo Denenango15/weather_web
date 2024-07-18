@@ -8,27 +8,38 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 <body>
-    <div id="container">
-        <h1>Твоя Погода</h1>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="error">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <form method="POST">
-            <label for="city">Город:</label>
-            <input type="text" name="city" id="city" list="city-suggestions" required>
-            <datalist id="city-suggestions"></datalist>
-            <button type="submit">Посмотреть погоду</button>
-        </form>
-        {% if info %}
-            <h2>{{ info.city }}:</h2>
-            <p>Текущая температура: {{ info.temp }}°C</p>
-            <p>Минимальная температура: {{ info.temp_min }}°C</p>
-            <p>Максимальная температура: {{ info.temp_max }}°C</p>
+<div id="container">
+    <h1>Погода</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="error">{{ message }}</p>
+            {% endfor %}
         {% endif %}
+    {% endwith %}
+    <div class="tab-content">
+        <div class="tab active">
+            <form method="POST">
+                <label for="city">Город:</label>
+                <input type="text" name="city" id="city" required>
+                <button type="submit">Посмотреть погоду</button>
+            </form>
+            {% if info %}
+                <h2>{{ info.city }}:</h2>
+                <p>Текущая температура: {{ info.temp }}°C</p>
+                <p>Минимальная температура: {{ info.temp_min }}°C</p>
+                <p>Максимальная температура: {{ info.temp_max }}°C</p>
+            {% endif %}
+        </div>
+        <div class="tab">
+            <p>Вы смотрели:</p>
+            <ul>
+                {% for city in cities %}
+                    <li><a href="#" data-city="{{ city }}">{{ city }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+</div
 </body>
 </html>

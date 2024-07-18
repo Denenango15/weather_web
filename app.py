@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, make_response
 import requests
 
 app = Flask(__name__)
@@ -6,13 +6,14 @@ app.secret_key = 'weccvev32r2fwc'
 
 @app.route('/', methods=['GET', 'POST'])
 def weather():
+    cities = get_cities_from_cookie()
+
     if request.method == 'POST':
         city = request.form['city']
         lat, lon = get_coordinates(city)
 
         if lat is None or lon is None:
             flash(f"Error: City not found", "error")
-            return render_template('index.html'), 400
         else:
             weather_data = get_weather_data(lat, lon)
 
@@ -23,9 +24,24 @@ def weather():
                 'temp_max': weather_data['temperature_max']
             }
 
-            return render_template('index.html', info=info)
+            # Добавляем город в список городов
+            if city not in cities:
+                cities.append(city)
 
-    return render_template('index.html')
+            # Сохраняем список городов в cookie на 30 дней
+            response = make_response(render_template('index.html', info=info, cities=cities))
+            response.set_cookie('cities', ','.join(cities), max_age=30*24*60*60)
+            return response
+
+    return render_template('index.html', cities=cities)
+
+def get_cities_from_cookie():
+    cities_str = request.cookies.get('cities')
+    if cities_str:
+        return cities_str.split(',')
+    else:
+        return []
+
 
 def get_coordinates(city):
     '''
