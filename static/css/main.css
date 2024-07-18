@@ -1,0 +1,47 @@
+#bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.05;
+  z-index: -1;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 50px;
+}
+
+h4 {
+  text-align: center;
+  padding-top: 50px;
+}
+
+#container {
+  text-align: center;
+  padding: 5px;
+}
+
+ul#cities-list {
+  list-style-position: inside;
+  margin-right: 50px;
+}
+
+ul#cities-list li {
+  text-align: center;
+}
+
+.tab-content {
+  width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 50px;
+}
+
+ul#cities-list a {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  color: #000;
+}

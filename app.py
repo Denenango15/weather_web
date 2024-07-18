@@ -1,13 +1,12 @@
-from flask import Flask, render_template, request, flash, make_response, url_for, redirect
+from flask import Flask, render_template, request, flash, url_for, redirect, session, jsonify
 import requests
 
 app = Flask(__name__)
 app.secret_key = 'weccvev32r2fwc'
 
-
 @app.route('/', methods=['GET', 'POST'])
 def weather():
-    cities = get_cities_from_cookie()
+    cities = session.get('cities', [])
 
     if request.method == 'POST':
         city = request.form['city']
@@ -29,13 +28,30 @@ def weather():
             if city not in cities:
                 cities.append(city)
 
-            # Сохраняем список городов в cookie на 30 дней
-            response = make_response(render_template('index.html', info=info, cities=cities))
-            response.set_cookie('cities', ','.join(cities), max_age=30 * 24 * 60 * 60)
-            return response
+            # Сохраняем список городов в сессию
+            session['cities'] = cities
+
+            return render_template('index.html', info=info, cities=cities)
 
     return render_template('index.html', cities=cities)
 
+@app.route('/clear_cities')
+def clear_cities():
+    session.pop('cities', None)
+    return redirect(url_for('weather'))
+
+@app.route('/get_coordinates')
+def get_coordinates_api():
+    city = request.args.get('city')
+    lat, lon = get_coordinates(city)
+    return jsonify({'lat': lat, 'lon': lon})
+
+@app.route('/get_weather_data')
+def get_weather_data_api():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    weather_data = get_weather_data(lat, lon)
+    return jsonify(weather_data)
 
 def get_cities_from_cookie():
     '''
@@ -47,7 +63,6 @@ def get_cities_from_cookie():
         return cities_str.split(',')
     else:
         return []
-
 
 def get_coordinates(city):
     '''
@@ -62,7 +77,6 @@ def get_coordinates(city):
         return results[0]['latitude'], results[0]['longitude']
     else:
         return None, None
-
 
 def get_weather_data(lat, lon):
     '''
@@ -82,7 +96,6 @@ def get_weather_data(lat, lon):
         'temperature_min': temp_min,
         'temperature_max': temp_max
     }
-
 
 if __name__ == '__main__':
     app.run(debug=True)
