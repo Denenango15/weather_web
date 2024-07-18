@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, flash, make_response
+from flask import Flask, render_template, request, flash, make_response, url_for, redirect
 import requests
 
 app = Flask(__name__)
 app.secret_key = 'weccvev32r2fwc'
+
 
 @app.route('/', methods=['GET', 'POST'])
 def weather():
@@ -30,12 +31,17 @@ def weather():
 
             # Сохраняем список городов в cookie на 30 дней
             response = make_response(render_template('index.html', info=info, cities=cities))
-            response.set_cookie('cities', ','.join(cities), max_age=30*24*60*60)
+            response.set_cookie('cities', ','.join(cities), max_age=30 * 24 * 60 * 60)
             return response
 
     return render_template('index.html', cities=cities)
 
+
 def get_cities_from_cookie():
+    '''
+    получаем куки
+
+    '''
     cities_str = request.cookies.get('cities')
     if cities_str:
         return cities_str.split(',')
@@ -57,6 +63,7 @@ def get_coordinates(city):
     else:
         return None, None
 
+
 def get_weather_data(lat, lon):
     '''
     Получаем информацию о погоде (текущую, минимальную и максимальную температуры)
@@ -75,6 +82,7 @@ def get_weather_data(lat, lon):
         'temperature_min': temp_min,
         'temperature_max': temp_max
     }
+
 
 if __name__ == '__main__':
     app.run(debug=True)
